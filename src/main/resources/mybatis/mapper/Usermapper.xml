@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="blog02.demo.mapperimp.Usermapper">
+
+  <!--在不需要验证登录的情况下,不需要密码字段-->
+  <resultMap id="ziduan" type="blog02.demo.pojo.User">
+    <id column="id" property="id"></id>
+    <result column="avatar" property="avatar"></result>
+    <result column="email" property="email"></result>
+    <result column="nickname" property="nickname"></result>
+    <result column="username" property="username"></result>
+    <result column="type" property="type"></result>
+    <result column="create_time" property="createtime"></result>
+    <result column="cupdate_time" property="updatetime"></result>
+  </resultMap>
+
+  <select id="selectUserAll" resultMap="ziduan">
+    select * from t_user
+  </select>
+  <select id="selectUserbyID" resultMap="ziduan" parameterType="int">
+    select * from t_user where id = #{id}
+  </select>
+
+  <!--用户登录的时候需要账户密码-->
+  <resultMap id="yanzheng" type="blog02.demo.pojo.User">
+    <id column="id" property="id"></id>
+    <result column="avatar" property="avatar"></result>
+    <result column="email" property="email"></result>
+    <result column="nickname" property="nickname"></result>
+    <result column="username" property="username"></result>
+    <result column="password" property="password"></result>
+    <result column="type" property="type"></result>
+    <result column="create_time" property="createtime"></result>
+    <result column="cupdate_time" property="updatetime"></result>
+  </resultMap>
+
+  <select id="selectUserbyUsername" resultMap="yanzheng" parameterType="String">
+    select * from t_user where username = #{username}
+  </select>
+
+</mapper>

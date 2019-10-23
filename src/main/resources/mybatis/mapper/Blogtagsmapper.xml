@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="blog02.demo.mapperimp.Blogtagsmapper">
+
+<!--自定义映射表-->
+    <resultMap id="lbcx0" type="blog02.demo.pojo.BlogTags">
+        <result column="blogs_id" property="blogId"></result>
+        <result column="tags_id" property="tagsId"></result>
+    </resultMap>
+
+    <resultMap id="lbcx1" type="blog02.demo.pojo.BlogTags">
+        <id column="blogs_id" property="blogId"></id>
+        <result column="tags_id" property="tagsId"></result>
+        <collection column="tags_id" property="tagsName" select="blog02.demo.mapperimp.Tlagmapper.returnbyTagname"></collection>
+    </resultMap>
+
+    <resultMap id="lbcx2" type="blog02.demo.pojo.BlogTags">
+        <result column="blogs_id" property="blogId"></result>
+        <result column="tags_id" property="tagsId"></result>
+        <collection column="blogs_id" property="blogs" select="blog02.demo.mapperimp.Blogmapper.selectBlogbyID"></collection>
+    </resultMap>
+
+
+<!--查询语句-->
+    <select id="selectBlogTlagByBlogID" resultMap="lbcx1" parameterType="int">
+        select blogs_id,tags_id from t_blog_tags where blogs_id = #{id}
+    </select>
+
+    <select id="selectBlogTlagByTlagID" resultMap="lbcx2" parameterType="int">
+        select * from t_blog_tags where tags_id = #{id}
+    </select>
+
+    <insert id="insertBlogTlag">
+        insert into t_blog_tags(blogs_id,tags_id) values (#{blogId},#{tagsId})
+    </insert>
+
+    <delete id="deleteByBlogId" parameterType="long">
+        delete from t_blog_tags where blogs_id = #{id}
+    </delete>
+
+</mapper>
+

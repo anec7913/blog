@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="blog02.demo.mapperimp.Tlagmapper">
+
+    <resultMap id="showBlogNum" type="blog02.demo.pojo.Tlag">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"></result>
+        <collection column="id" property="Blognumber" select="blog02.demo.mapperimp.Tlagmapper.selectTlagBlogByTlagID"></collection>
+    </resultMap>
+
+
+    <select id="selecttlagbyId" resultType="blog02.demo.pojo.Tlag" parameterType="int">
+        select * from t_tag where id = #{id}
+    </select>
+
+    <select id="returnbyTagname" resultType="String" parameterType="int">
+        select name from t_tag where id = #{id}
+    </select>
+
+    <select id="selectTlagAll" resultType="blog02.demo.pojo.Tlag">
+        select * from t_tag
+    </select>
+
+    <select id="selectTlagAllBlogNumber" resultMap="showBlogNum">
+        select * from t_tag
+    </select>
+
+    <select id="selectPublishTrueTlagAll" resultMap="showBlogNum">
+        select
+            distinct t_tag.id,
+            t_tag.name
+        from t_tag INNER JOIN t_blog_tags on t_tag.id = t_blog_tags.tags_id
+        where blogs_id in (select id from t_blog where published = 1)
+    </select>
+
+    <select id="selectTlagBlogByTlagID" resultType="int" parameterType="int">
+            select count(*)
+        from (
+            select *
+            from t_blog_tags as tb INNER JOIN t_tag as t on t.id = tb.tags_id
+            WHERE tb.blogs_id in (
+                select id from t_blog where published = 1
+                )
+            HAVING t.id = #{id}
+            )
+            as tb
+    </select>
+
+    <select id="selectTlagByBlogID" resultType="blog02.demo.pojo.Tlag">
+        select * from t_tag inner join t_blog_tags on id = tags_id where blogs_id = #{id}
+    </select>
+
+    <select id="selectTlagByName" resultType="blog02.demo.pojo.Tlag" parameterType="string">
+        select * from t_tag where name = #{name}
+    </select>
+
+    <insert id="insertTlag" parameterType="blog02.demo.pojo.Tlag" >
+        insert into t_tag(name) values (#{name})
+    </insert>
+
+    <update id="updateTlag" parameterType="blog02.demo.pojo.Tlag">
+        update t_tag set name = #{name} where id = #{id}
+    </update>
+
+    <delete id="deleteTlag" parameterType="blog02.demo.pojo.Tlag">
+        delete from t_tag where id = #{id}
+    </delete>
+
+</mapper>

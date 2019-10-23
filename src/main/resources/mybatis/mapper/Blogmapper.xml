@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="blog02.demo.mapperimp.Blogmapper">
+
+  <resultMap id="lianbiao" type="blog02.demo.pojo.Blog">
+    <id column="id" property="id"></id>
+    <result column="appreciation" property="appreciation"></result>
+    <result column="commentabled" property="commentabled"></result>
+    <result column="create_Time" property="createTime"></result>
+    <result column="description" property="description"></result>
+    <result column="first_picture" property="firstPicture"></result>
+    <result column="flag" property="flag"></result>
+    <result column="published" property="published"></result>
+    <result column="recommend" property="recommend"></result>
+    <result column="share_statement" property="shareStatement"></result>
+    <result column="title" property="title"></result>
+    <result column="update_Time" property="updateTime"></result>
+    <result column="views" property="views"></result>
+    <result column="type_id" property="typeId"></result>
+    <result column="user_id" property="userId"></result>
+    <result column="content" property="content"></result>
+    <collection column="user_id" property="user" select="blog02.demo.mapperimp.Usermapper.selectUserbyID"></collection>
+    <collection column="id" property="type" select="blog02.demo.mapperimp.Typemapper.selectBlogTypeName"></collection>
+    <collection column="id" property="tlags" select="blog02.demo.mapperimp.Tlagmapper.selectTlagByBlogID"></collection>
+  </resultMap>
+
+    <select id="selectBlogAll" resultMap="lianbiao">
+    select * from t_blog
+    </select>
+    <select id="selectBlogbyID" resultMap="lianbiao" parameterType="int">
+    select
+      id,
+      appreciation,
+      commentabled,
+      create_Time,
+      description,
+      first_picture,
+      flag,
+      published,
+      recommend,
+      share_statement,
+      title,
+      update_Time,
+      views,
+      type_id,
+      user_id,
+      content
+     from t_blog where id = #{id}
+    </select>
+    <select id="selectBlogByRecommend" resultMap="lianbiao">
+        select * from t_blog where recommend is not null order by recommend desc
+    </select>
+    <select id="selectBlogPublishedByRecommend" resultMap="lianbiao">
+        select * from t_blog where recommend is not null and published = 1 order by recommend desc
+    </select>
+
+    <select id="selectBlogByTlagID" resultMap="lianbiao" parameterType="int">
+    select id,
+      appreciation,
+      commentabled,
+      create_Time,
+      description,
+      first_picture,
+      flag,
+      published,
+      recommend,
+      share_statement,
+      title,
+      update_Time,
+      views,
+      type_id,
+      user_id,
+      content
+      from t_blog INNER JOIN t_blog_tags on t_blog.id = t_blog_tags.blogs_id where tags_id = #{id}
+    </select>
+    <select id="selectBlogPublishedByTlagID" resultMap="lianbiao" parameterType="int">
+    select id,
+      appreciation,
+      commentabled,
+      create_Time,
+      description,
+      first_picture,
+      flag,
+      published,
+      recommend,
+      share_statement,
+      title,
+      update_Time,
+      views,
+      type_id,
+      user_id,
+      content
+      from t_blog INNER JOIN t_blog_tags on t_blog.id = t_blog_tags.blogs_id where tags_id = #{id} and t_blog.published = 1
+    </select>
+
+
+    <select id="selectBlogByTypeID" resultMap="lianbiao" parameterType="int">
+    select * from t_blog where type_id = #{id}
+    </select>
+    <select id="selectBlogPublishedByTypeID" resultMap="lianbiao" parameterType="int">
+    select * from t_blog where type_id = #{id} and published =1
+    </select>
+
+    <select id="selectYearList" resultType="string">
+    select Year(update_time) from t_blog
+    </select>
+    <select id="selectBlogByYear" resultMap="lianbiao" parameterType="string">
+        select * from t_blog where YEAR(update_time) = #{year} and published = 1
+    </select>
+    <select id="selectBlogCount" resultType="int">
+    select count(*) from t_blog
+    </select>
+
+    <select id="searchBlog" resultMap="lianbiao" parameterType="blog02.demo.pojo.searchObj">
+        select * from t_blog
+        <where>
+            <if test="title!=null and title !=''">
+                <bind name="title" value="'%'+title+'%'"/>
+                and title like #{title}
+            </if>
+            <if test="typeId!=null and typeId !=''">
+                and type_id = #{typeId}
+            </if>
+                and recommend = #{recommend}
+        </where>
+
+    </select>
+
+    <select id="searchBlogPublished" resultMap="lianbiao" parameterType="string">
+        <bind name="query" value="'%'+query+'%'"/>
+        select * from t_blog where  published = 1 and (title like #{query} or content like #{query})
+    </select>
+
+
+    <select id="selectBlogByPublished" resultMap="lianbiao">
+        select * from t_blog where published = 1
+    </select>
+
+    <select id="selectBlogByPublishedCount" resultType="int">
+        select count(*) from t_blog where published = 1
+    </select>
+
+
+
+  <resultMap id="lianbiao2" type="blog02.demo.pojo.Blog">
+    <id column="id" property="id"></id>
+    <result column="appreciation" property="appreciation"></result>
+    <result column="commentabled" property="commentabled"></result>
+    <result column="create_Time" property="createTime"></result>
+    <result column="description" property="description"></result>
+    <result column="first_picture" property="firstPicture"></result>
+    <result column="flag" property="flag"></result>
+    <result column="published" property="published"></result>
+    <result column="recommend" property="recommend"></result>
+    <result column="share_statement" property="shareStatement"></result>
+    <result column="title" property="title"></result>
+    <result column="update_Time" property="updateTime"></result>
+    <result column="views" property="views"></result>
+    <result column="type_id" property="typeId"></result>
+    <result column="user_id" property="userId"></result>
+    <result column="content" property="content"></result>
+  </resultMap>
+
+  <insert id="insertBlog" parameterType="blog02.demo.pojo.Blog" useGeneratedKeys="true" keyProperty="id">
+     insert into t_blog(
+        appreciation,
+        commentabled,
+        content,
+        create_time,
+        description,
+        first_picture,
+        flag,
+        published,
+        recommend,
+        share_statement,
+        title,
+        update_time,
+        views,
+        type_id,
+        user_id
+        )
+      values (
+        #{appreciation},
+        #{commentabled},
+        #{content},
+        #{createTime},
+        #{description},
+        #{firstPicture},
+        #{flag},
+        #{published},
+        #{recommend},
+        #{shareStatement},
+        #{title},
+        #{updateTime},
+        #{views},
+        #{typeId},
+        #{userId}
+        )
+  </insert>
+
+  <delete id="deleteBlogById" parameterType="long">
+    delete from t_blog where id = #{id}
+  </delete>
+
+    <update id="updateBlog" parameterType="blog02.demo.pojo.Blog">
+        update  t_blog
+        set
+            content = #{content},
+            title = #{title},
+            description = #{description},
+            first_picture = #{firstPicture},
+            type_id =  #{typeId},
+            update_time = #{updateTime},
+            appreciation = #{appreciation},
+            commentabled = #{commentabled},
+            published = #{published},
+            recommend =#{recommend},
+            share_statement = #{shareStatement},
+            flag = #{flag}
+        where id = #{id}
+    </update>
+</mapper>
+
